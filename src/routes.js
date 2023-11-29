@@ -1,25 +1,25 @@
-import { Database } from "./database.js";
-import { randomUUID } from "crypto";
-import { buildRoutePath } from "./utils/build-route-path.js";
+import { Database } from './database.js';
+import { randomUUID } from 'crypto';
+import { buildRoutePath } from './utils/build-route-path.js';
 
 const database = new Database();
 
 export const routes = [
   {
-    method: "GET",
-    path: buildRoutePath("/users"),
+    method: 'GET',
+    path: buildRoutePath('/users'),
     handler: async (req, res) => {
-      const users = await database.select("users");
-      res.setHeader("Content-Type", "application/json");
+      const users = await database.select('users');
+      res.setHeader('Content-Type', 'application/json');
 
       return res.end(JSON.stringify(users));
     },
   },
   {
-    method: "POST",
-    path: buildRoutePath("/users"),
+    method: 'POST',
+    path: buildRoutePath('/users'),
     handler: async (req, res) => {
-      res.writeHead(201, { "Content-Type": "application/json" });
+      res.writeHead(201, { 'Content-Type': 'application/json' });
       const { name, email } = req.body;
 
       const user = {
@@ -27,23 +27,42 @@ export const routes = [
         name,
         email,
       };
-      console.log("user", user);
+      console.log('user', user);
 
-      database.insert("users", user);
+      database.insert('users', user);
 
-      return res.end("Criação de Usuários");
+      return res.end('Criação de Usuários');
     },
   },
   {
-    method: "DELETE",
-    path: buildRoutePath("/user/:id"),
+    method: 'DELETE',
+    path: buildRoutePath('/user/:id'),
     handler: async (req, res) => {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      const { id } = req.body;
+      console.log('🚀 ~ file: routes.js:42 ~ handler: ~ req:', req.params);
 
-      database.delete("users", id);
+      res.writeHead(204, { 'Content-Type': 'application/json' });
+      const { id } = req.params;
 
-      return res.end("Usuário deletado");
+      database.delete('users', id);
+
+      return res.end('Usuário deletado');
+    },
+  },
+  {
+    method: 'PUT',
+    path: buildRoutePath('/user/:id'),
+    handler: async (req, res) => {
+      const { id } = req.params;
+
+      res.writeHead(201, { 'Content-Type': 'application/json' });
+      const { name, email } = req.body;
+
+      database.update('users', id, {
+        name,
+        email,
+      });
+
+      return res.end('Usuário atualizado');
     },
   },
 ];
