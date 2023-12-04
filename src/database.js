@@ -18,13 +18,18 @@ export class Database {
     fs.writeFile(databasePath, JSON.stringify(this.#database));
   }
 
-  select(table) {
-    // Verifique se a tabela existe no banco de dados antes de acessá-la
-    if (this.#database[table]) {
-      return this.#database[table];
-    } else {
-      return [];
+  select(table, search) {
+    let data = this.#database[table] ?? [];
+
+    if (search) {
+      return data.filter((row) => {
+        return Object.entries(search).some(([key, value]) => {
+          return row[key].toLowerCase().includes(value.toLowerCase());
+        });
+      });
     }
+
+    return data;
   }
 
   delete(table, id) {
